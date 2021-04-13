@@ -1,21 +1,36 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import AppLoading from "expo-app-loading";
+import { useFonts } from "expo-font";
+
+import MealsNavigator from "./navigation/MealsNavigator";
+import { createStore, combineReducers } from "redux";
+import { enableScreens } from "react-native-screens";
+import { LogBox } from "react-native";
+import mealReducer from "./store/reducers/Meals";
+import { Provider } from "react-redux";
+// Ignore log notification by message
+LogBox.ignoreAllLogs();
+
+enableScreens();
+
+const rootReducer = combineReducers({
+  meals: mealReducer,
+});
+
+const store = createStore(rootReducer);
 
 export default function App() {
+  const [dataLoaded] = useFonts({
+    "open-sans": require("./assets/fonts/OpenSans-Regular.ttf"),
+    "open-sans-bold": require("./assets/fonts/OpenSans-Bold.ttf"),
+  });
+
+  if (!dataLoaded) {
+    return <AppLoading />;
+  }
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+      <MealsNavigator />
+    </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
